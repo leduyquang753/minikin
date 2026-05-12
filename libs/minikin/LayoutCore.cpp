@@ -26,6 +26,7 @@
 #include <utils/LruCache.h>
 #include <utils/Trace.h>
 
+#include <bitset>
 #include <cmath>
 #include <iostream>
 #include <mutex>

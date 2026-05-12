@@ -24,6 +24,8 @@
 #include <cstdint>
 #include <memory>
 
+#include <polyfills/attribute.h>
+
 // ---------------------------------------------------------------------------
 
 namespace minikin {

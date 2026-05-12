@@ -144,6 +144,7 @@ Hyphenator* Hyphenator::loadBinaryForRust(const uint8_t* /*patternData*/, size_t
                                           size_t /*minPrefix*/, size_t /*minSuffix*/,
                                           const std::string& /*locale*/) {
     MINIKIN_NOT_REACHED("Rust implementation is only available on linux/Android");
+    return nullptr;
 }
 #endif  // __linux__
 
