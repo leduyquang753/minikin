@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include <polyfills/types.h>
+
 #include "minikin/FontFamily.h"
 #include "minikin/Hyphenator.h"
 #include "minikin/MinikinExtent.h"

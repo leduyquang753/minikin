@@ -1,0 +1,6 @@
+#ifndef MINIKIN_POLYFILLS_ATTRIBUTE_H
+#define MINIKIN_POLYFILLS_ATTRIBUTE_H
+
+#define __attribute__(...)
+
+#endif // MINIKIN_POLYFILLS_ATTRIBUTE_H

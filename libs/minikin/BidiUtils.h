@@ -25,6 +25,8 @@
 
 #include <unicode/ubidi.h>
 
+#include <polyfills/types.h>
+
 #include "minikin/Macros.h"
 #include "minikin/U16StringPiece.h"
 

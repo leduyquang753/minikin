@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include <android-base/macros.h>
+//#include <android-base/macros.h>
 #include <unicode/uchar.h>
 #include <unicode/utf16.h>
 
@@ -192,7 +192,7 @@ size_t GraphemeBreak::getTextRunCursor(const float* advances, const uint16_t* bu
             if (offset < start + count) {
                 offset++;
             }
-            FALLTHROUGH_INTENDED;
+            [[fallthrough]];
         case AT_OR_AFTER:
             while (!isGraphemeBreak(advances, buf, start, count, offset)) {
                 offset++;
@@ -202,7 +202,7 @@ size_t GraphemeBreak::getTextRunCursor(const float* advances, const uint16_t* bu
             if (offset > start) {
                 offset--;
             }
-            FALLTHROUGH_INTENDED;
+            [[fallthrough]];
         case AT_OR_BEFORE:
             while (!isGraphemeBreak(advances, buf, start, count, offset)) {
                 offset--;

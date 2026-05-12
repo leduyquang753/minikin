@@ -17,6 +17,7 @@
 #ifndef MINIKIN_BUFFER_H
 #define MINIKIN_BUFFER_H
 
+#include <bit>
 #include <cstring>
 #include <string_view>
 #include <type_traits>
@@ -62,7 +63,7 @@ public:
     template <typename T, size_t align = sizeof(T)>
     static const uint8_t* align(const uint8_t* p) {
         static_assert(align <= kMaxAlignment);
-        static_assert(__builtin_popcount(align) == 1, "align must be a power of 2");
+        static_assert(std::popcount(align) == 1, "align must be a power of 2");
         constexpr size_t mask = align - 1;
         intptr_t i = reinterpret_cast<intptr_t>(p);
         intptr_t aligned = (i + mask) & ~mask;

@@ -20,6 +20,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <polyfills/types.h>
+
 namespace minikin {
 
 class GraphemeBreak {
