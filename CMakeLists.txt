@@ -14,7 +14,6 @@ target_sources(Minikin
 		libs/minikin/Emoji.cpp
 		libs/minikin/Font.cpp
 		libs/minikin/FontCollection.cpp
-		libs/minikin/FontFakery.cpp
 		libs/minikin/FontFamily.cpp
 		libs/minikin/FontFeatureUtils.cpp
 		libs/minikin/FontFileParser.cpp
@@ -38,7 +37,6 @@ target_sources(Minikin
 		libs/minikin/ScriptUtils.cpp
 		libs/minikin/SparseBitSet.cpp
 		libs/minikin/SystemFonts.cpp
-		libs/minikin/U16StringPiece.cpp
 		libs/minikin/WordBreaker.cpp
 	PUBLIC
 		FILE_SET HEADERS

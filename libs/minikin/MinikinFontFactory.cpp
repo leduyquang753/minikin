@@ -18,6 +18,8 @@
 
 #include "minikin/MinikinFontFactory.h"
 
+#include <string>
+
 #include <log/log.h>
 
 #include "MinikinInternal.h"
