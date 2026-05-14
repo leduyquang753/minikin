@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <bit>
-
 #include "minikin/SparseBitSet.h"
 
 #include "MinikinInternal.h"
@@ -129,7 +127,12 @@ void SparseBitSet::writeTo(BufferWriter* writer) const {
 }
 
 int SparseBitSet::CountLeadingZeros(element x) {
-    return std::countl_zero(x);
+	int count = sizeof(element) * 8;
+	while (x != 0) {
+		--count;
+		x >>= 1;
+	}
+	return count;
 }
 
 uint32_t SparseBitSet::nextSetBit(uint32_t fromIndex) const {

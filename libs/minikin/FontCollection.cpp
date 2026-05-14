@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "minikin/FontCollection.h"
 
-#include <log/log.h>
 #include <unicode/unorm2.h>
 
 #include <algorithm>
@@ -202,8 +199,6 @@ void FontCollection::init(const vector<std::shared_ptr<FontFamily>>& typefaces) 
         range->end = mOwnedFamilyVec.size();
     }
     // See the comment in Range for more details.
-    LOG_ALWAYS_FATAL_IF(mOwnedFamilyVec.size() >= 0xFFFF,
-                        "Exceeded the maximum indexable cmap coverage.");
     mFamilyVec = mOwnedFamilyVec.data();
     mFamilyVecCount = mOwnedFamilyVec.size();
 }
@@ -241,9 +236,7 @@ void FontCollection::writeTo(BufferWriter* writer,
     for (size_t i = 0; i < getFamilyCount(); ++i) {
         const std::shared_ptr<FontFamily>& fontFamily = getFamilyAt(i);
         auto it = fontFamilyToIndexMap.find(fontFamily);
-        if (it == fontFamilyToIndexMap.end()) {
-            ALOGE("fontFamily not found in fontFamilyToIndexMap");
-        } else {
+        if (it != fontFamilyToIndexMap.end()) {
             indices.push_back(it->second);
         }
     }

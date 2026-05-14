@@ -63,7 +63,6 @@ void HyphenatorMap::addAliasInternal(const std::string& fromLocaleStr,
     std::lock_guard<std::mutex> lock(mMutex);
     auto it = mMap.find(toLocale.getIdentifier());
     if (it == mMap.end()) {
-        ALOGE("Target Hyphenator not found.");
         return;
     }
     // Overwrite even if there is already a fallback entry.

@@ -163,7 +163,7 @@ public:
     float measureHyphenPiece(const U16StringPiece& text, const Range& range,
                              StartHyphenEdit startHyphen, EndHyphenEdit endHyphen,
                              LayoutPieces* pieces) const override;
-    float measureText(const U16StringPiece& text) const;
+    float measureText(const U16StringPiece& text) const override;
 
 private:
     MinikinPaint mPaint;
@@ -178,12 +178,12 @@ public:
     ReplacementRun(const Range& range, float width, uint32_t localeListId)
             : Run(range), mWidth(width), mLocaleListId(localeListId) {}
 
-    bool isRtl() const { return false; }
-    bool canBreak() const { return false; }
-    bool canHyphenate() const { return false; }
+    bool isRtl() const override { return false; }
+    bool canBreak() const override { return false; }
+    bool canHyphenate() const override { return false; }
     LineBreakStyle lineBreakStyle() const override { return LineBreakStyle::None; }
     LineBreakWordStyle lineBreakWordStyle() const override { return LineBreakWordStyle::None; }
-    uint32_t getLocaleListId() const { return mLocaleListId; }
+    uint32_t getLocaleListId() const override { return mLocaleListId; }
 
     void getMetrics(const U16StringPiece& /* text */, std::vector<float>* advances,
                     std::vector<uint8_t>* /*flags*/, LayoutPieces* /* precomputed */, bool,
@@ -215,7 +215,7 @@ public:
                       StartHyphenEdit /* startHyphen */, EndHyphenEdit /* endHyphen */,
                       Layout* /* outLayout*/) const override {}
 
-    float measureText(const U16StringPiece&) const { return 0; }
+    float measureText(const U16StringPiece&) const override { return 0; }
 
 private:
     const float mWidth;

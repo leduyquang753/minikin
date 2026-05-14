@@ -57,7 +57,6 @@ static bool addRange(std::vector<uint32_t>& coverage, uint32_t start, uint32_t e
         // Reject unordered range input since SparseBitSet assumes that the given range vector is
         // sorted. OpenType specification says cmap entries are sorted in order of code point
         // values, thus for OpenType compliant font files, we don't reach here.
-        android_errorWriteLog(0x534e4554, "32178311");
         return false;
     }
 }
@@ -167,7 +166,6 @@ static bool getCoverageFormat4(std::vector<uint32_t>& coverage, const uint8_t* d
         uint32_t start = readU16(data, kHeaderSize + 2 * (segCount + i));
         if (end < start) {
             // invalid segment range: size must be positive
-            android_errorWriteLog(0x534e4554, "26413177");
             return false;
         }
         uint32_t rangeOffset = readU16(data, kHeaderSize + 2 * (3 * segCount + i));
@@ -220,7 +218,6 @@ static bool getCoverageFormat12(std::vector<uint32_t>& coverage, const uint8_t* 
     }
     uint32_t nGroups = readU32(data, kNGroupsOffset);
     if (nGroups >= kMaxNGroups || kFirstGroupOffset + nGroups * kGroupSize > size) {
-        android_errorWriteLog(0x534e4554, "25645298");
         return false;
     }
     for (uint32_t i = 0; i < nGroups; i++) {
@@ -229,7 +226,6 @@ static bool getCoverageFormat12(std::vector<uint32_t>& coverage, const uint8_t* 
         uint32_t end = readU32(data, groupOffset + kEndCharCodeOffset);
         if (end < start) {
             // invalid group range: size must be positive
-            android_errorWriteLog(0x534e4554, "26413177");
             return false;
         }
 
@@ -239,9 +235,6 @@ static bool getCoverageFormat12(std::vector<uint32_t>& coverage, const uint8_t* 
         }
         if (end > MAX_UNICODE_CODE_POINT) {
             // file is inclusive, vector is exclusive
-            if (end == 0xFFFFFFFF) {
-                android_errorWriteLog(0x534e4554, "62134807");
-            }
             return addRange(coverage, start, MAX_UNICODE_CODE_POINT + 1);
         }
         if (!addRange(coverage, start, end + 1)) {  // file is inclusive, vector is exclusive
@@ -307,9 +300,6 @@ static bool getVSCoverage(std::vector<uint32_t>* out_ranges, const uint8_t* data
         const uint64_t numRecords = readU32(nonDefaultUVSTable, 0);
         const uint64_t sizeToRead = numRecords * kUVSMappingRecordSize + kHeaderSize;
         if (sizeToRead > nonDefaultUVSTableRemaining) {
-            if (sizeToRead > UINT_MAX) {
-                android_errorWriteLog(0x534e4554, "70808908");
-            }
             return false;
         }
         for (uint32_t i = 0; i < numRecords; ++i) {
@@ -339,9 +329,6 @@ static bool getVSCoverage(std::vector<uint32_t>* out_ranges, const uint8_t* data
         const uint64_t numRecords = readU32(defaultUVSTable, 0);
         const uint64_t sizeToRead = numRecords * kUnicodeRangeRecordSize + kHeaderSize;
         if (sizeToRead > defaultUVSTableRemaining) {
-            if (sizeToRead > UINT_MAX) {
-                android_errorWriteLog(0x534e4554, "70808908");
-            }
             return false;
         }
 
@@ -388,9 +375,6 @@ static void getCoverageFormat14(std::vector<SparseBitSet>* out, const uint8_t* d
     const uint64_t numRecords = readU32(data, kNumRecordOffset);
     const uint64_t sizeToRead = kHeaderSize + kRecordSize * numRecords;
     if (numRecords == 0 || sizeToRead > length) {
-        if (sizeToRead > UINT_MAX) {
-            android_errorWriteLog(0x534e4554, "70808908");
-        }
         return;
     }
 

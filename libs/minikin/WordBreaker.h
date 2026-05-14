@@ -25,11 +25,10 @@
 
 #include <unicode/ubrk.h>
 
+#include <cstddef>
 #include <list>
 #include <memory>
 #include <mutex>
-
-#include <polyfills/types.h>
 
 #include "Locale.h"
 #include "minikin/IcuUtils.h"
@@ -143,21 +142,21 @@ public:
     void setText(const uint16_t* data, size_t size);
 
     // Advance iterator to next word break with current locale. Return offset, or -1 if EOT
-    ssize_t next();
+    std::ptrdiff_t next();
 
     // Advance iterator to the break just after "from" with using the new provided locale.
     // Return offset, or -1 if EOT
-    ssize_t followingWithLocale(const Locale& locale, LineBreakStyle lbStyle,
+    std::ptrdiff_t followingWithLocale(const Locale& locale, LineBreakStyle lbStyle,
                                 LineBreakWordStyle lbWordStyle, size_t from);
 
     // Current offset of iterator, equal to 0 at BOT or last return from next()
-    ssize_t current() const;
+    std::ptrdiff_t current() const;
 
     // After calling next(), wordStart() and wordEnd() are offsets defining the previous
     // word. If wordEnd <= wordStart, it's not a word for the purpose of hyphenation.
-    ssize_t wordStart() const;
+    std::ptrdiff_t wordStart() const;
 
-    ssize_t wordEnd() const;
+    std::ptrdiff_t wordEnd() const;
 
     // Returns the range from wordStart() to wordEnd().
     // If wordEnd() <= wordStart(), returns empty range.
@@ -179,7 +178,7 @@ protected:
 private:
     int32_t iteratorNext();
     void detectEmailOrUrl();
-    ssize_t findNextBreakInEmailOrUrl();
+    std::ptrdiff_t findNextBreakInEmailOrUrl();
 
     // Doesn't take ownership. Must not be nullptr. Must be set in constructor.
     ICULineBreakerPool* mPool;
@@ -189,11 +188,11 @@ private:
     std::unique_ptr<UText, decltype(&utext_close)> mUText;
     const uint16_t* mText = nullptr;
     size_t mTextSize;
-    ssize_t mLast;
-    ssize_t mCurrent;
+    std::ptrdiff_t mLast;
+    std::ptrdiff_t mCurrent;
 
     // state for the email address / url detector
-    ssize_t mScanOffset;
+    std::ptrdiff_t mScanOffset;
     bool mInEmailOrUrl;
 };
 

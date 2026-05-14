@@ -20,8 +20,6 @@
 #define MINIKIN_INTERNAL_H
 
 #include <hb.h>
-#include <utils/Log.h>
-//#include <utils/Mutex.h>
 
 #include <algorithm>
 #include <memory>

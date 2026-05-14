@@ -17,6 +17,7 @@
 #include "OptimalLineBreaker.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
 
 #include "FeatureFlags.h"
@@ -184,7 +185,7 @@ std::vector<DesperateBreak> populateDesperatePoints(const U16StringPiece& textBu
     } else {
         WordBreaker wb;
         wb.setText(textBuf.data(), textBuf.length());
-        ssize_t next = wb.followingWithLocale(getEffectiveLocale(run.getLocaleListId()),
+        std::ptrdiff_t next = wb.followingWithLocale(getEffectiveLocale(run.getLocaleListId()),
                                               run.lineBreakStyle(), LineBreakWordStyle::None,
                                               range.getStart());
 

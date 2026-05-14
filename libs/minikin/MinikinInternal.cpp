@@ -15,11 +15,7 @@
  */
 // Definitions internal to Minikin
 
-#define LOG_TAG "Minikin"
-
 #include "MinikinInternal.h"
-
-#include <log/log.h>
 
 #include "FeatureFlags.h"
 #include "minikin/MinikinPaint.h"

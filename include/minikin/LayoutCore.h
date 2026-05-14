@@ -17,11 +17,7 @@
 #ifndef MINIKIN_LAYOUT_CORE_H
 #define MINIKIN_LAYOUT_CORE_H
 
-#include <gtest/gtest_prod.h>
-
 #include <vector>
-
-#include <polyfills/types.h>
 
 #include "minikin/FontFamily.h"
 #include "minikin/Hyphenator.h"
@@ -57,6 +53,7 @@ public:
     const FakedFont& fontAt(int glyphPos) const { return mFonts[mFontIndices[glyphPos]]; }
     uint32_t glyphIdAt(int glyphPos) const { return mGlyphIds[glyphPos]; }
     const Point& pointAt(int glyphPos) const { return mPoints[glyphPos]; }
+    std::uint32_t originalIndexAt(const int glyphPos) const { return mOriginalIndices[glyphPos]; }
 
     uint32_t getMemoryUsage() const {
         return sizeof(uint8_t) * mFontIndices.size() + sizeof(uint32_t) * mGlyphIds.size() +
@@ -67,11 +64,10 @@ public:
     static MinikinRect calculateBounds(const LayoutPiece& layout, const MinikinPaint& paint);
 
 private:
-    FRIEND_TEST(LayoutTest, doLayoutWithPrecomputedPiecesTest);
-
     std::vector<uint8_t> mFontIndices;      // per glyph
     std::vector<uint32_t> mGlyphIds;        // per glyph
     std::vector<Point> mPoints;             // per glyph
+    std::vector<std::uint32_t> mOriginalIndices; // Per glyph.
 
     std::vector<float> mAdvances;  // per code units
 

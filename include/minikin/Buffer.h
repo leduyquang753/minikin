@@ -17,7 +17,6 @@
 #ifndef MINIKIN_BUFFER_H
 #define MINIKIN_BUFFER_H
 
-#include <bit>
 #include <cstring>
 #include <string_view>
 #include <type_traits>
@@ -60,11 +59,11 @@ public:
     //
     // If T is a large struct or class, you would need to specify 'align'
     // template parameter manually.
-    template <typename T, size_t align = sizeof(T)>
+    template <typename T, size_t AlignT = sizeof(T)>
     static const uint8_t* align(const uint8_t* p) {
-        static_assert(align <= kMaxAlignment);
-        static_assert(std::popcount(align) == 1, "align must be a power of 2");
-        constexpr size_t mask = align - 1;
+        static_assert(AlignT <= kMaxAlignment);
+        //static_assert(__builtin_popcount(AlignT) == 1, "align must be a power of 2");
+        constexpr size_t mask = AlignT - 1;
         intptr_t i = reinterpret_cast<intptr_t>(p);
         intptr_t aligned = (i + mask) & ~mask;
         return reinterpret_cast<const uint8_t*>(aligned);
@@ -78,7 +77,7 @@ public:
 
     template <typename T, size_t align = sizeof(T)>
     const T* map(uint32_t size) {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         mCurrent = BufferReader::align<T, align>(mCurrent);
         const T* data = reinterpret_cast<const T*>(mCurrent);
         mCurrent += size;
@@ -87,7 +86,7 @@ public:
 
     template <typename T, size_t align = sizeof(T)>
     void skip() {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         mCurrent = BufferReader::align<T, align>(mCurrent);
         mCurrent += sizeof(T);
     }
@@ -95,7 +94,7 @@ public:
     // Return a pointer to an array and its number of elements.
     template <typename T, size_t align = sizeof(T)>
     std::pair<const T*, uint32_t> readArray() {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         static_assert(sizeof(T) % align == 0);
         uint32_t size = read<uint32_t>();
         mCurrent = BufferReader::align<T, align>(mCurrent);
@@ -106,7 +105,7 @@ public:
 
     template <typename T, size_t align = sizeof(T)>
     void skipArray() {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         uint32_t size = read<uint32_t>();
         mCurrent = BufferReader::align<T, align>(mCurrent);
         mCurrent += size * sizeof(T);
@@ -165,7 +164,7 @@ public:
     // The reserved region is not initialized.
     template <typename T, size_t align = sizeof(T)>
     T* reserve(uint32_t size) {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         mPos = BufferWriter::align<T, align>(mPos);
         uint32_t pos = mPos;
         mPos += size;
@@ -178,7 +177,7 @@ public:
     // TODO: use std::type_identity_t when C++20 is available.
     template <typename T, size_t align = sizeof(T)>
     void writeArray(const std::common_type_t<T>* data, uint32_t size) {
-        static_assert(std::is_trivially_copyable_v<T>, "T must be a POD");
+        static_assert(std::is_standard_layout<T>::value, "T must be a POD");
         static_assert(sizeof(T) % align == 0);
         write<uint32_t>(size);
         mPos = BufferWriter::align<T, align>(mPos);
@@ -197,9 +196,9 @@ private:
     uint8_t* mData;
     size_t mPos;
 
-    template <typename T, size_t align>
+    template <typename T, size_t AlignT>
     size_t align(size_t pos) const {
-        return BufferReader::align<T, align>(mData + pos) - mData;
+        return BufferReader::align<T, AlignT>(mData + pos) - mData;
     }
 
     // Forbid copy and assign.

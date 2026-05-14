@@ -16,6 +16,7 @@
 
 #include "WordBreaker.h"
 
+#include <cstddef>
 #include <list>
 #include <map>
 
@@ -113,7 +114,7 @@ WordBreaker::WordBreaker()
 
 WordBreaker::WordBreaker(ICULineBreakerPool* pool) : mPool(pool), mUText(nullptr, &utext_close) {}
 
-ssize_t WordBreaker::followingWithLocale(const Locale& locale, LineBreakStyle lbStyle,
+std::ptrdiff_t WordBreaker::followingWithLocale(const Locale& locale, LineBreakStyle lbStyle,
                                          LineBreakWordStyle lbWordStyle, size_t from) {
     if (!mUText) {
         return mCurrent;
@@ -147,7 +148,7 @@ void WordBreaker::setText(const uint16_t* data, size_t size) {
     mUText.reset(utext_openUChars(nullptr, reinterpret_cast<const UChar*>(data), size, &status));
 }
 
-ssize_t WordBreaker::current() const {
+std::ptrdiff_t WordBreaker::current() const {
     return mCurrent;
 }
 
@@ -267,10 +268,10 @@ void WordBreaker::detectEmailOrUrl() {
     }
 }
 
-ssize_t WordBreaker::findNextBreakInEmailOrUrl() {
+std::ptrdiff_t WordBreaker::findNextBreakInEmailOrUrl() {
     // special rules for email addresses and URL's as per Chicago Manual of Style (16th ed.)
     uint16_t lastChar = mText[mLast];
-    ssize_t i;
+    std::ptrdiff_t i;
     for (i = mLast + 1; i < mScanOffset; i++) {
         if (breakAfter(lastChar)) {
             break;
@@ -296,26 +297,26 @@ ssize_t WordBreaker::findNextBreakInEmailOrUrl() {
     return i;
 }
 
-ssize_t WordBreaker::next() {
+std::ptrdiff_t WordBreaker::next() {
     mLast = mCurrent;
 
     detectEmailOrUrl();
     if (mInEmailOrUrl) {
         mCurrent = findNextBreakInEmailOrUrl();
     } else {  // Business as usual
-        mCurrent = (ssize_t)iteratorNext();
+        mCurrent = (std::ptrdiff_t)iteratorNext();
     }
     return mCurrent;
 }
 
-ssize_t WordBreaker::wordStart() const {
+std::ptrdiff_t WordBreaker::wordStart() const {
     if (mInEmailOrUrl) {
         return mLast;
     }
-    ssize_t result = mLast;
+    std::ptrdiff_t result = mLast;
     while (result < mCurrent) {
         UChar32 c;
-        ssize_t ix = result;
+        std::ptrdiff_t ix = result;
         U16_NEXT(mText, ix, mCurrent, c);
         const int32_t lb = u_getIntPropertyValue(c, UCHAR_LINE_BREAK);
         // strip leading punctuation, defined as OP and QU line breaking classes,
@@ -328,14 +329,14 @@ ssize_t WordBreaker::wordStart() const {
     return result;
 }
 
-ssize_t WordBreaker::wordEnd() const {
+std::ptrdiff_t WordBreaker::wordEnd() const {
     if (mInEmailOrUrl) {
         return mLast;
     }
-    ssize_t result = mCurrent;
+    std::ptrdiff_t result = mCurrent;
     while (result > mLast) {
         UChar32 c;
-        ssize_t ix = result;
+        std::ptrdiff_t ix = result;
         U16_PREV(mText, mLast, ix, c);
         const int32_t gc_mask = U_GET_GC_MASK(c);
         // strip trailing spaces, punctuation and control characters

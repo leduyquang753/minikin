@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "GreedyLineBreak"
+#include <cstddef>
 
 #include "FeatureFlags.h"
 #include "HyphenatorMap.h"
@@ -315,7 +315,7 @@ bool GreedyLineBreaker::doLineBreakWithFallback(const Range& range) {
 
     WordBreaker wb;
     wb.setText(mTextBuf.data(), mTextBuf.length());
-    ssize_t next = wb.followingWithLocale(getEffectiveLocale(targetRun->getLocaleListId()),
+    std::ptrdiff_t next = wb.followingWithLocale(getEffectiveLocale(targetRun->getLocaleListId()),
                                           targetRun->lineBreakStyle(), LineBreakWordStyle::None,
                                           range.getStart());
 

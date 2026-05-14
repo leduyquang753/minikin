@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "minikin/FontFamily.h"
-
-#include <log/log.h>
 
 #include <algorithm>
 #include <unordered_set>
@@ -256,7 +252,7 @@ FakedFont FontFamily::getVariationFamilyAdjustment(FontStyle style) const {
             return FakedFont{mFonts[0], FontFakery(false, false, style.weight(), italic ? 1 : 0)};
         case VariationFamilyType::TwoFont_wght:
             return FakedFont{mFonts[italic ? 1 : 0], FontFakery(false, false, style.weight(), -1)};
-        case VariationFamilyType::None:
+        default:
             return FakedFont{mFonts[0], FontFakery()};
     }
 }
@@ -265,7 +261,6 @@ void FontFamily::computeCoverage() {
     const std::shared_ptr<Font>& font = getClosestMatch(FontStyle()).font;
     HbBlob cmapTable(font->baseFont(), MakeTag('c', 'm', 'a', 'p'));
     if (cmapTable.get() == nullptr) {
-        ALOGE("Could not get cmap table size!\n");
         return;
     }
 

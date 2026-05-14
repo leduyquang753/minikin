@@ -21,8 +21,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <gtest/gtest_prod.h>
-
 #include "minikin/FontCollection.h"
 #include "minikin/LayoutCore.h"
 #include "minikin/Range.h"
@@ -34,13 +32,16 @@ class Layout;
 struct LayoutPieces;
 
 struct LayoutGlyph {
-    LayoutGlyph(FakedFont font, uint32_t glyph_id, float x, float y)
-            : font(font), glyph_id(glyph_id), x(x), y(y) {}
+    LayoutGlyph(
+        const FakedFont font, const std::uint32_t glyph_id, const float x, const float y,
+        const std::uint32_t originalIndex
+    ): font(font), glyph_id(glyph_id), x(x), y(y), originalIndex(originalIndex) {}
     FakedFont font;
 
     uint32_t glyph_id;
     float x;
     float y;
+    std::uint32_t originalIndex;
 };
 
 // Must be the same value with Paint.java
@@ -97,6 +98,7 @@ public:
     unsigned int getGlyphId(int i) const { return mGlyphs[i].glyph_id; }
     float getX(int i) const { return mGlyphs[i].x; }
     float getY(int i) const { return mGlyphs[i].y; }
+    std::uint32_t getOriginalIndex(const int i) const { return mGlyphs[i].originalIndex; }
     float getAdvance() const { return mAdvance; }
     float getCharAdvance(size_t i) const { return mAdvances[i]; }
     const std::vector<float>& getAdvances() const { return mAdvances; }
@@ -104,15 +106,10 @@ public:
     // Purge all caches, useful in low memory conditions
     static void purgeCaches();
 
-    // Dump minikin internal statistics, cache usage, cache hit ratio, etc.
-    static void dumpMinikinStats(int fd);
-
     // Append another layout (for example, cached value) into this one
     void appendLayout(const LayoutPiece& src, size_t start, float extraAdvance);
 
 private:
-    FRIEND_TEST(LayoutTest, doLayoutWithPrecomputedPiecesTest);
-
     void doLayout(const U16StringPiece& str, const Range& range, Bidi bidiFlags,
                   const MinikinPaint& paint, StartHyphenEdit startHyphen, EndHyphenEdit endHyphen);
 

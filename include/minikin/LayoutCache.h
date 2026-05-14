@@ -21,10 +21,9 @@
 
 #include <mutex>
 
-#include <utils/LruCache.h>
-
 #include "minikin/FontCollection.h"
 #include "minikin/Hasher.h"
+#include "minikin/LruCache.h"
 #include "minikin/MinikinPaint.h"
 
 #ifdef _WIN32

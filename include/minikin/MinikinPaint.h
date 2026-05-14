@@ -50,7 +50,7 @@ enum MinikinFontFlags {
 struct MinikinPaint {
     MinikinPaint(const std::shared_ptr<FontCollection>& font)
             : size(0),
-              scaleX(0),
+              scaleX(1),
               skewX(0),
               letterSpacing(0),
               wordSpacing(0),

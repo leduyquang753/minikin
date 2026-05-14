@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "minikin/Font.h"
 
 #include <hb-ot.h>
 #include <hb.h>
-#include <log/log.h>
 
 #include <vector>
 

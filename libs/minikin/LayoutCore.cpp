@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-#define ATRACE_TAG ATRACE_TAG_VIEW
-
 #include "minikin/LayoutCore.h"
 
 #include <hb-icu.h>
 #include <hb-ot.h>
-#include <log/log.h>
 #include <unicode/ubidi.h>
 #include <unicode/utf16.h>
-#include <utils/LruCache.h>
-#include <utils/Trace.h>
 
-#include <bitset>
 #include <cmath>
+#include <cstddef>
 #include <iostream>
 #include <mutex>
 #include <string>
@@ -44,6 +38,7 @@
 #include "minikin/HbUtils.h"
 #include "minikin/LayoutCache.h"
 #include "minikin/LayoutPieces.h"
+#include "minikin/LruCache.h"
 #include "minikin/Macros.h"
 
 namespace minikin {
@@ -191,7 +186,7 @@ static inline void addHyphenToHbBuffer(const HbBufferUniquePtr& buffer, const Hb
 // to translate cluster values returned by HarfBuzz to input indices.
 static inline uint32_t addToHbBuffer(const HbBufferUniquePtr& buffer, const uint16_t* buf,
                                      size_t start, size_t count, size_t bufSize,
-                                     ssize_t scriptRunStart, ssize_t scriptRunEnd,
+                                     std::ptrdiff_t scriptRunStart, std::ptrdiff_t scriptRunEnd,
                                      StartHyphenEdit inStartHyphen, EndHyphenEdit inEndHyphen,
                                      const HbFontUniquePtr& hbFont) {
     // Only hyphenate the very first script run for starting hyphens.
@@ -302,6 +297,7 @@ LayoutPiece::LayoutPiece(const U16StringPiece& textBuf, const Range& range, bool
     mFontIndices.reserve(count);
     mGlyphIds.reserve(count);
     mPoints.reserve(count);
+    mOriginalIndices.reserve(count);
 
     HbBufferUniquePtr buffer(hb_buffer_create());
     U16StringPiece substr = textBuf.substr(range);
@@ -367,8 +363,8 @@ LayoutPiece::LayoutPiece(const U16StringPiece& textBuf, const Range& range, bool
         // Note: scriptRunStart and scriptRunEnd, as well as run.start and run.end, run between 0
         // and count.
         for (const auto [range, script] : ScriptText(textBuf, run.start, run.end)) {
-            ssize_t scriptRunStart = range.getStart();
-            ssize_t scriptRunEnd = range.getEnd();
+            std::ptrdiff_t scriptRunStart = range.getStart();
+            std::ptrdiff_t scriptRunEnd = range.getEnd();
 
             // After the last line, scriptRunEnd is guaranteed to have increased, since the only
             // time getScriptRun does not increase its iterator is when it has already reached the
@@ -416,7 +412,7 @@ LayoutPiece::LayoutPiece(const U16StringPiece& textBuf, const Range& range, bool
             // advance needs to be saved into mAdvances[scriptRunStart]. So cluster values need to
             // be reduced by (clusterStart - scriptRunStart) to get converted to indices of
             // mAdvances.
-            const ssize_t clusterOffset = clusterStart - scriptRunStart;
+            const std::ptrdiff_t clusterOffset = clusterStart - scriptRunStart;
 
             if (numGlyphs) {
                 mAdvances[info[0].cluster - clusterOffset] += letterSpaceHalf;
@@ -437,13 +433,11 @@ LayoutPiece::LayoutPiece(const U16StringPiece& textBuf, const Range& range, bool
                 mFontIndices.push_back(font_ix);
                 mGlyphIds.push_back(glyph_ix);
                 mPoints.emplace_back(x + xoff, y + yoff);
+                mOriginalIndices.push_back(info[i].cluster - clusterOffset);
                 float xAdvance = HBFixedToFloat(positions[i].x_advance);
 
                 if (clusterBaseIndex < count) {
                     mAdvances[clusterBaseIndex] += xAdvance;
-                } else {
-                    ALOGE("cluster %zu (start %zu) out of bounds of count %zu", clusterBaseIndex,
-                          start, count);
                 }
                 x += xAdvance;
             }
@@ -461,7 +455,6 @@ LayoutPiece::LayoutPiece(const U16StringPiece& textBuf, const Range& range, bool
 
 // static
 MinikinRect LayoutPiece::calculateBounds(const LayoutPiece& layout, const MinikinPaint& paint) {
-    ATRACE_CALL();
     MinikinRect out;
     for (uint32_t i = 0; i < layout.glyphCount(); ++i) {
         MinikinRect bounds;

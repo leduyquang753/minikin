@@ -17,8 +17,6 @@
 #ifndef MINIKIN_FONT_H
 #define MINIKIN_FONT_H
 
-#include <gtest/gtest_prod.h>
-
 #include <atomic>
 #include <map>
 #include <memory>
@@ -214,9 +212,6 @@ private:
     // Stop copying.
     Font(const Font& o) = delete;
     Font& operator=(const Font& o) = delete;
-
-    FRIEND_TEST(FontTest, MoveConstructorTest);
-    FRIEND_TEST(FontTest, MoveAssignmentTest);
 };
 
 struct FakedFont {

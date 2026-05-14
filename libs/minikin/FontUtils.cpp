@@ -18,8 +18,6 @@
 
 #include <cstdint>
 
-#include <log/log.h>
-
 namespace minikin {
 
 static uint16_t readU16(const uint8_t* data, size_t offset) {
@@ -67,9 +65,6 @@ bool analyzeAxes(const uint8_t* fvar_data, size_t fvar_size, std::unordered_set<
         return false;  // Unsupported version.
     }
     if (fvar_size < axisOffset + axisSize * axisCount) {
-        if (axisOffset > axisSize) {
-            android_errorWriteLog(0x534e4554, "77822336");
-        }
         return false;  // Invalid table size.
     }
     for (uint32_t i = 0; i < axisCount; ++i) {

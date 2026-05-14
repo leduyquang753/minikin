@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "minikin/Layout.h"
 
 #include <hb-icu.h>
 #include <hb-ot.h>
-#include <log/log.h>
 #include <unicode/ubidi.h>
 #include <unicode/utf16.h>
-#include <utils/LruCache.h>
 
 #include <cmath>
 #include <iostream>
@@ -40,6 +36,7 @@
 #include "minikin/HbUtils.h"
 #include "minikin/LayoutCache.h"
 #include "minikin/LayoutPieces.h"
+#include "minikin/LruCache.h"
 #include "minikin/Macros.h"
 namespace minikin {
 
@@ -168,10 +165,9 @@ float Layout::doLayoutWord(const uint16_t* buf, size_t start, size_t count, size
 }
 
 void Layout::appendLayout(const LayoutPiece& src, size_t start, float extraAdvance) {
-    for (size_t i = 0; i < src.glyphCount(); i++) {
-        mGlyphs.emplace_back(src.fontAt(i), src.glyphIdAt(i), mAdvance + src.pointAt(i).x,
-                             src.pointAt(i).y);
-    }
+    for (size_t i = 0; i < src.glyphCount(); i++) mGlyphs.emplace_back(
+        src.fontAt(i), src.glyphIdAt(i), mAdvance + src.pointAt(i).x, src.pointAt(i).y, start + src.originalIndexAt(i)
+    );
     const std::vector<float>& advances = src.advances();
     for (size_t i = 0; i < advances.size(); i++) {
         mAdvances[i + start] = advances[i];

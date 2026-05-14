@@ -17,8 +17,6 @@
 #ifndef MINIKIN_FONT_COLLECTION_H
 #define MINIKIN_FONT_COLLECTION_H
 
-#include <gtest/gtest_prod.h>
-
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -184,8 +182,6 @@ public:
     }
 
 private:
-    FRIEND_TEST(FontCollectionTest, bufferTest);
-
     explicit FontCollection(const std::vector<std::shared_ptr<FontFamily>>& typefaces);
     FontCollection(
             BufferReader* reader,

@@ -17,9 +17,9 @@
 #include "minikin/GraphemeBreak.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
-//#include <android-base/macros.h>
 #include <unicode/uchar.h>
 #include <unicode/utf16.h>
 
@@ -158,7 +158,7 @@ bool GraphemeBreak::isGraphemeBreak(const float* advances, const uint16_t* buf, 
             return false;
         } else {
             // Look at up to 1000 code units.
-            const size_t lookback_barrier = std::max((ssize_t)start, (ssize_t)offset_back - 1000);
+            const size_t lookback_barrier = std::max((std::ptrdiff_t)start, (std::ptrdiff_t)offset_back - 1000);
             size_t offset_backback = offset_back;
             while (offset_backback > lookback_barrier) {
                 uint32_t c0 = 0;
@@ -192,7 +192,7 @@ size_t GraphemeBreak::getTextRunCursor(const float* advances, const uint16_t* bu
             if (offset < start + count) {
                 offset++;
             }
-            [[fallthrough]];
+			[[fallthrough]];
         case AT_OR_AFTER:
             while (!isGraphemeBreak(advances, buf, start, count, offset)) {
                 offset++;
@@ -202,7 +202,7 @@ size_t GraphemeBreak::getTextRunCursor(const float* advances, const uint16_t* bu
             if (offset > start) {
                 offset--;
             }
-            [[fallthrough]];
+			[[fallthrough]];
         case AT_OR_BEFORE:
             while (!isGraphemeBreak(advances, buf, start, count, offset)) {
                 offset--;

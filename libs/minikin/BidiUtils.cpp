@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "BidiUtils.h"
 
 #include <algorithm>
+#include <cstddef>
 
 #include <unicode/ubidi.h>
 #include <unicode/utf16.h>
@@ -60,7 +59,6 @@ BidiText::RunInfo BidiText::getRunInfoAt(uint32_t runOffset) const {
     int32_t lengthRun = -1;
     const UBiDiDirection runDir = ubidi_getVisualRun(mBidi.get(), runOffset, &startRun, &lengthRun);
     if (startRun == -1 || lengthRun == -1) {
-        ALOGE("invalid visual run");
         return {Range::invalidRange(), false};
     }
     const uint32_t runStart = std::max(static_cast<uint32_t>(startRun), mRange.getStart());
@@ -81,14 +79,12 @@ BidiText::BidiText(const U16StringPiece& textBuf, const Range& range, Bidi bidiF
 
     mBidi.reset(ubidi_open());
     if (!mBidi) {
-        ALOGE("error creating bidi object");
         return;
     }
     UErrorCode status = U_ZERO_ERROR;
     // Set callbacks to override bidi classes of new emoji
     ubidi_setClassCallback(mBidi.get(), emojiBidiOverride, nullptr, nullptr, nullptr, &status);
     if (!U_SUCCESS(status)) {
-        ALOGE("error setting bidi callback function, status = %d", status);
         return;
     }
 
@@ -96,14 +92,12 @@ BidiText::BidiText(const U16StringPiece& textBuf, const Range& range, Bidi bidiF
     ubidi_setPara(mBidi.get(), reinterpret_cast<const UChar*>(textBuf.data()), textBuf.size(),
                   bidiReq, nullptr, &status);
     if (!U_SUCCESS(status)) {
-        ALOGE("error calling ubidi_setPara, status = %d", status);
         return;
     }
     // RTL paragraphs get an odd level, while LTR paragraphs get an even level,
     const bool paraIsRTL = ubidi_getParaLevel(mBidi.get()) & 0x01;
-    const ssize_t rc = ubidi_countRuns(mBidi.get(), &status);
+    const std::ptrdiff_t rc = ubidi_countRuns(mBidi.get(), &status);
     if (!U_SUCCESS(status) || rc < 0) {
-        ALOGW("error counting bidi runs, status = %d", status);
         return;
     }
     if (rc == 0) {

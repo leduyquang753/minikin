@@ -23,8 +23,6 @@
 #include <cstdint>
 #include <memory>
 
-#include <polyfills/attribute.h>
-
 // ---------------------------------------------------------------------------
 
 namespace minikin {
@@ -95,7 +93,7 @@ private:
     // 'packed' is used so that the object layout won't change between
     // 32-bit and 64-bit processes.
     // 'aligned(4)' is only for optimization.
-    struct __attribute__((packed, aligned(4))) MappableData {
+    struct MappableData {
         uint32_t mMaxVal;
         uint32_t mIndicesCount;
         uint32_t mBitmapsCount;
@@ -106,7 +104,8 @@ private:
         // mArray packs two arrays:
         // element mBitmaps[mBitmapsCount];
         // uint16_t mIndices[mIndicesCount];
-        __attribute__((aligned(4))) uint32_t mArray[];
+        // FIXTHIS: Extremely dirty, UB inbound!
+        uint32_t mArray[1];
         const element* bitmaps() const { return mArray; }
         element* bitmaps() { return mArray; }
         const uint16_t* indices() const {

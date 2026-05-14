@@ -17,6 +17,7 @@
 #include "minikin/Hyphenator.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -223,7 +224,7 @@ static inline int32_t getJoiningType(UChar32 codepoint) {
 // Assumption for caller: location must be >= 2 and word[location] == CHAR_SOFT_HYPHEN.
 // This function decides if the letters before and after the hyphen should appear as joining.
 static inline HyphenationType getHyphTypeForArabic(const U16StringPiece& word, size_t location) {
-    ssize_t i = location;
+    std::ptrdiff_t i = location;
     int32_t type = U_JT_NON_JOINING;
     while (static_cast<size_t>(i) < word.size() &&
            (type = getJoiningType(word[i])) == U_JT_TRANSPARENT) {

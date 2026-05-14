@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Minikin"
-
 #include "LocaleListCache.h"
 
 #include <unordered_set>
 
-#include <log/log.h>
 #include <minikin/Hasher.h>
 #include <minikin/LocaleList.h>
 #include <unicode/uloc.h>
@@ -45,7 +42,6 @@ static size_t toLanguageTag(char* output, size_t outSize, const StringPiece& loc
     outLength = uloc_canonicalize(localeString.c_str(), output, outSize, &uErr);
     if (U_FAILURE(uErr) || (uErr == U_STRING_NOT_TERMINATED_WARNING)) {
         // unable to build a proper locale identifier
-        ALOGD("uloc_canonicalize(\"%s\") failed: %s", localeString.c_str(), u_errorName(uErr));
         output[0] = '\0';
         return 0;
     }
@@ -65,7 +61,6 @@ static size_t toLanguageTag(char* output, size_t outSize, const StringPiece& loc
     uloc_addLikelySubtags(output, likelyChars, ULOC_FULLNAME_CAPACITY, &uErr);
     if (U_FAILURE(uErr) || (uErr == U_STRING_NOT_TERMINATED_WARNING)) {
         // unable to build a proper locale identifier
-        ALOGD("uloc_addLikelySubtags(\"%s\") failed: %s", output, u_errorName(uErr));
         output[0] = '\0';
         return 0;
     }
@@ -74,7 +69,6 @@ static size_t toLanguageTag(char* output, size_t outSize, const StringPiece& loc
     outLength = uloc_toLanguageTag(likelyChars, output, outSize, false, &uErr);
     if (U_FAILURE(uErr) || (uErr == U_STRING_NOT_TERMINATED_WARNING)) {
         // unable to build a proper locale identifier
-        ALOGD("uloc_toLanguageTag(\"%s\") failed: %s", likelyChars, u_errorName(uErr));
         output[0] = '\0';
         return 0;
     }
