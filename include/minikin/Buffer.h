@@ -18,6 +18,7 @@
 #define MINIKIN_BUFFER_H
 
 #include <bit>
+#include <cstdint>
 #include <cstring>
 #include <string_view>
 #include <type_traits>

@@ -17,6 +17,7 @@
 #ifndef MINIKIN_U16STRING_PIECE_H
 #define MINIKIN_U16STRING_PIECE_H
 
+#include <cstdint>
 #include <vector>
 
 #include "minikin/Range.h"

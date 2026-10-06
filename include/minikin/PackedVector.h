@@ -19,6 +19,7 @@
 
 #include <log/log.h>
 
+#include <cstring>
 #include <type_traits>
 #include <vector>
 
