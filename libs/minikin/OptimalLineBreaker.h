@@ -17,7 +17,7 @@
 #ifndef MINIKIN_OPTIMAL_LINE_BREAKER_H
 #define MINIKIN_OPTIMAL_LINE_BREAKER_H
 
-#include <polyfills/types.h>
+#include <minikin/polyfills/types.h>
 
 #include "minikin/LineBreaker.h"
 #include "minikin/MeasuredText.h"

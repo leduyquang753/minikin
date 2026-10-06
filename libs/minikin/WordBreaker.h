@@ -29,7 +29,7 @@
 #include <memory>
 #include <mutex>
 
-#include <polyfills/types.h>
+#include <minikin/polyfills/types.h>
 
 #include "Locale.h"
 #include "minikin/IcuUtils.h"

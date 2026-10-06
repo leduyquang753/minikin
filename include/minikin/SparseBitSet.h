@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <memory>
 
-#include <polyfills/attribute.h>
+#include <minikin/polyfills/attribute.h>
 
 // ---------------------------------------------------------------------------
 

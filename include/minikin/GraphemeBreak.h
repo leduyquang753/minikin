@@ -20,7 +20,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <polyfills/types.h>
+#include <minikin/polyfills/types.h>
 
 namespace minikin {
 

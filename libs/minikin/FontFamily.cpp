@@ -16,7 +16,7 @@
 
 #include "minikin/FontFamily.h"
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 #include <algorithm>
 #include <unordered_set>

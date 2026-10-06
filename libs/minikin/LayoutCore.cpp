@@ -20,11 +20,11 @@
 
 #include <hb-icu.h>
 #include <hb-ot.h>
-#include <log/log.h>
+#include <minikin/log/log.h>
 #include <unicode/ubidi.h>
 #include <unicode/utf16.h>
-#include <utils/LruCache.h>
-#include <utils/Trace.h>
+#include <minikin/utils/LruCache.h>
+#include <minikin/utils/Trace.h>
 
 #include <bitset>
 #include <cmath>

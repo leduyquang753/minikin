@@ -17,7 +17,7 @@
 #ifndef MINIKIN_PACKED_VECTOR_H
 #define MINIKIN_PACKED_VECTOR_H
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 #include <cstring>
 #include <type_traits>

@@ -18,7 +18,7 @@
 
 #include <hb-ot.h>
 #include <hb.h>
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 #include <vector>
 

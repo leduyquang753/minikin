@@ -17,7 +17,7 @@
 #ifndef MINIKIN_LAYOUT_CACHE_H
 #define MINIKIN_LAYOUT_CACHE_H
 
-#include <utils/LruCache.h>
+#include <minikin/utils/LruCache.h>
 
 #include <mutex>
 

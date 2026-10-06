@@ -18,10 +18,10 @@
 
 #include <hb-icu.h>
 #include <hb-ot.h>
-#include <log/log.h>
+#include <minikin/log/log.h>
 #include <unicode/ubidi.h>
 #include <unicode/utf16.h>
-#include <utils/LruCache.h>
+#include <minikin/utils/LruCache.h>
 
 #include <cmath>
 #include <iostream>

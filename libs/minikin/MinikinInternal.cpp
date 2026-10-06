@@ -17,7 +17,7 @@
 
 #include "MinikinInternal.h"
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 #include "FeatureFlags.h"
 #include "minikin/MinikinPaint.h"

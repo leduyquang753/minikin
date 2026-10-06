@@ -17,8 +17,8 @@
 #ifndef MINIKIN_FONT_COLLECTION_H
 #define MINIKIN_FONT_COLLECTION_H
 
-#include <gtest/gtest_prod.h>
-#include <utils/LruCache.h>
+#include <minikin/gtest/gtest_prod.h>
+#include <minikin/utils/LruCache.h>
 
 #include <functional>
 #include <memory>

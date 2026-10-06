@@ -17,11 +17,11 @@
 #ifndef MINIKIN_LAYOUT_CORE_H
 #define MINIKIN_LAYOUT_CORE_H
 
-#include <gtest/gtest_prod.h>
+#include <minikin/gtest/gtest_prod.h>
 
 #include <vector>
 
-#include <polyfills/types.h>
+#include <minikin/polyfills/types.h>
 
 #include "minikin/Constants.h"
 #include "minikin/FontFamily.h"

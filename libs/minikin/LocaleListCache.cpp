@@ -18,7 +18,7 @@
 
 #include <unordered_set>
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 #include <minikin/Hasher.h>
 #include <minikin/LocaleList.h>
 #include <unicode/uloc.h>

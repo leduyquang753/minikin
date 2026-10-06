@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <polyfills/types.h>
+#include <minikin/polyfills/types.h>
 
 #include "minikin/Characters.h"
 #include "minikin/U16StringPiece.h"

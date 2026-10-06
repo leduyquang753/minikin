@@ -16,7 +16,7 @@
 
 #include "minikin/MinikinFontFactory.h"
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 #include "MinikinInternal.h"
 

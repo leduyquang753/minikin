@@ -17,7 +17,7 @@
 #ifndef MINIKIN_LAYOUT_H
 #define MINIKIN_LAYOUT_H
 
-#include <gtest/gtest_prod.h>
+#include <minikin/gtest/gtest_prod.h>
 
 #include <memory>
 #include <sstream>

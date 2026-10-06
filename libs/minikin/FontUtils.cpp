@@ -18,7 +18,7 @@
 
 #include <cstdint>
 
-#include <log/log.h>
+#include <minikin/log/log.h>
 
 namespace minikin {
 
