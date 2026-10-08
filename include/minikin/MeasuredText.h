@@ -54,7 +54,8 @@ struct LineMetrics {
 
 class Run {
 public:
-    Run(const Range& range) : mRange(range) {}
+    Run(const Range& range, bool noBreakBefore, bool noBreakAfter):
+        mRange(range), noBreakBefore(noBreakBefore), noBreakAfter(noBreakAfter) {}
     virtual ~Run() {}
 
     // Returns true if this run is RTL. Otherwise returns false.
@@ -123,6 +124,8 @@ public:
         }
     }
 
+    const bool noBreakBefore = false, noBreakAfter = false;
+
 protected:
     const Range mRange;
 };
@@ -130,8 +133,8 @@ protected:
 class StyleRun : public Run {
 public:
     StyleRun(const Range& range, MinikinPaint&& paint, int lineBreakStyle, int lineBreakWordStyle,
-             bool hyphenation, bool isRtl)
-            : Run(range),
+             bool hyphenation, bool isRtl, bool noBreakBefore, bool noBreakAfter)
+            : Run(range, noBreakBefore, noBreakAfter),
               mPaint(std::move(paint)),
               mLineBreakStyle(lineBreakStyle),
               mLineBreakWordStyle(lineBreakWordStyle),
@@ -184,8 +187,8 @@ private:
 
 class ReplacementRun : public Run {
 public:
-    ReplacementRun(const Range& range, float width, uint32_t localeListId)
-            : Run(range), mWidth(width), mLocaleListId(localeListId) {}
+    ReplacementRun(const Range& range, float width, uint32_t localeListId, bool noBreakBefore, bool noBreakAfter)
+            : Run(range, noBreakBefore, noBreakAfter), mWidth(width), mLocaleListId(localeListId) {}
 
     bool isRtl() const { return false; }
     bool canBreak() const { return false; }
@@ -299,6 +302,15 @@ public:
         return false;
     }
 
+    bool runHasNoBreak(uint32_t runIndex, uint32_t offset) const {
+        const auto &currentRun = *runs[runIndex];
+        if (offset != currentRun.getRange().getStart()) return false;
+        if (currentRun.noBreakBefore) return true;
+        if (runIndex == 0) return false;
+        const auto &previousRun = *runs[runIndex - 1];
+        return offset == previousRun.getRange().getEnd() && previousRun.noBreakAfter;
+    }
+
     uint32_t getMemoryUsage() const {
         return sizeof(float) * widths.size() + sizeof(HyphenBreak) * hyphenBreaks.size() +
                layoutPieces.getMemoryUsage();
@@ -337,15 +349,21 @@ public:
     MeasuredTextBuilder() {}
 
     void addStyleRun(int32_t start, int32_t end, MinikinPaint&& paint, int lineBreakStyle,
-                     int lineBreakWordStyle, bool hyphenation, bool isRtl) {
+                     int lineBreakWordStyle, bool hyphenation, bool isRtl,
+                     bool noBreakBefore = false, bool noBreakAfter = false) {
         mRuns.emplace_back(std::make_unique<StyleRun>(Range(start, end), std::move(paint),
                                                       lineBreakStyle, lineBreakWordStyle,
-                                                      hyphenation, isRtl));
+                                                      hyphenation, isRtl,
+                                                      noBreakBefore, noBreakAfter));
     }
 
-    void addReplacementRun(int32_t start, int32_t end, float width, uint32_t localeListId) {
-        mRuns.emplace_back(
-                std::make_unique<ReplacementRun>(Range(start, end), width, localeListId));
+    void addReplacementRun(
+        int32_t start, int32_t end, float width, uint32_t localeListId,
+        bool noBreakBefore = false, bool noBreakAfter = false
+    ) {
+        mRuns.emplace_back(std::make_unique<ReplacementRun>(
+            Range(start, end), width, localeListId, noBreakBefore, noBreakAfter
+        ));
     }
 
     template <class T, typename... Args>

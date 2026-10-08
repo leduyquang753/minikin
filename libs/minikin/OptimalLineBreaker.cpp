@@ -188,7 +188,8 @@ struct DesperateBreak {
 // Retrieves desperate break points from a word.
 std::vector<DesperateBreak> populateDesperatePoints(const U16StringPiece& textBuf,
                                                     const MeasuredText& measured,
-                                                    const Range& range, const Run& run) {
+                                                    const Range& range, const Run& run,
+                                                    uint32_t& runIndex) {
     std::vector<DesperateBreak> out;
 
     WordBreaker wb;
@@ -200,18 +201,17 @@ std::vector<DesperateBreak> populateDesperatePoints(const U16StringPiece& textBu
     const bool calculateFallback = range.contains(next);
     ParaWidth width = measured.widths[range.getStart()];
     for (uint32_t i = range.getStart() + 1; i < range.getEnd(); ++i) {
+        if (i >= measured.runs[runIndex]->getRange().getEnd()) ++runIndex;
         const float w = measured.widths[i];
         if (w == 0) {
             continue;  // w == 0 means here is not a grapheme bounds. Don't break here.
         }
         if (calculateFallback && i == (uint32_t)next) {
-            out.emplace_back(i, width, SCORE_FALLBACK);
+            if (!measured.runHasNoBreak(runIndex, i)) out.emplace_back(i, width, SCORE_FALLBACK);
             next = wb.next();
-            if (!range.contains(next)) {
-                break;
-            }
+            if (!range.contains(next)) next = static_cast<uint32_t>(-1);
         } else {
-            out.emplace_back(i, width, SCORE_DESPERATE);
+            if (!measured.runHasNoBreak(runIndex, i)) out.emplace_back(i, width, SCORE_DESPERATE);
         }
         width += w;
     }
@@ -264,7 +264,11 @@ OptimizeContext populateCandidates(const U16StringPiece& textBuf, const Measured
     const bool doHyphenation = frequency != HyphenationFrequency::None;
     auto hyIter = std::begin(measured.hyphenBreaks);
 
-    for (const auto& run : measured.runs) {
+    uint32_t desperatePointPopulationRunIndex = 0;
+
+    const uint32_t runCount = static_cast<uint32_t>(measured.runs.size());
+    for (uint32_t runIndex = 0; runIndex < runCount; ++runIndex) {
+        const auto &run = measured.runs[runIndex];
         const bool isRtl = run->isRtl();
         const Range& range = run->getRange();
         const float letterSpacing = run->getLetterSpacingInPx();
@@ -302,7 +306,9 @@ OptimizeContext populateCandidates(const U16StringPiece& textBuf, const Measured
                 hyIter++;
             }
             if (proc.widthFromLastWordBreak() > minLineWidth) {
-                desperateBreaks = populateDesperatePoints(textBuf, measured, contextRange, *run);
+                desperateBreaks = populateDesperatePoints(
+                    textBuf, measured, contextRange, *run, desperatePointPopulationRunIndex
+                );
             }
             const bool doHyphenationRun = doHyphenation && run->canHyphenate();
 
@@ -310,8 +316,14 @@ OptimizeContext populateCandidates(const U16StringPiece& textBuf, const Measured
                               proc, hyphenPenalty, isRtl, letterSpacing, &result);
 
             // We skip breaks for zero-width characters inside replacement spans.
-            if (run->getPaint() != nullptr || nextCharOffset == range.getEnd() ||
-                measured.widths[nextCharOffset] > 0) {
+            if (
+                (run->getPaint() != nullptr || nextCharOffset == range.getEnd() || measured.widths[nextCharOffset] > 0)
+                && (
+                    nextCharOffset == range.getEnd()
+                    ? runIndex == runCount - 1 || !measured.runHasNoBreak(runIndex + 1, nextCharOffset)
+                    : !measured.runHasNoBreak(runIndex, nextCharOffset)
+                )
+            ) {
                 const float penalty = hyphenPenalty * proc.wordBreakPenalty();
                 result.pushWordBreak(nextCharOffset, proc.sumOfCharWidths, proc.effectiveWidth,
                                      penalty, proc.rawSpaceCount, proc.effectiveSpaceCount, isRtl,
